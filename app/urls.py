@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import SelectedFieldAPIView
+from .views import SelectedFieldAPIView, ScanningApiView
 
 urlpatterns = [
-    path('cursos/', SelectedFieldAPIView.as_view(), name='cursos'),
+    path('digitalizar/', ScanningApiView.as_view(), name='digitalizar'),
+    path('campos/', SelectedFieldAPIView.as_view(), name="campos")
 ]
