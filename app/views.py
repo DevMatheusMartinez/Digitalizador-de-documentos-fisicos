@@ -1,10 +1,25 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
 # Create your views here.
 from .services.OCR import Ocr
-from .models import SelectedField
-from. serializers import SelectedFieldSerializer
+from .services.MysqlConnection import MysqlConnection
+from .models import SelectedField, ConnectionsMysql
+from. serializers import SelectedFieldSerializer, ConnectionsMysqlSerializer
+
+
+class ConnectionsMysqlApiView(APIView):
+    def get(self, request):
+        connectionsMysql = ConnectionsMysql.objects.all()
+        serializer = ConnectionsMysqlSerializer(connectionsMysql, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ConnectionsMysqlSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class SelectedFieldAPIView(APIView):
@@ -35,11 +50,25 @@ class SelectedFieldAPIView(APIView):
 class ScanningApiView(APIView):
     def post(self, request):
         data = Ocr.getAllWords(self, request)
-        fieldsSelected = Ocr.returnAllFieldsSelected(self, request)
+        fieldsSelected = Ocr.returnAllFieldsSelected(self)
+        fieldBank = Ocr.returnAllFieldBankSelected(self)
         dataReady = []
-        for field in fieldsSelected:
+        for index, field in enumerate(fieldsSelected):
             dataFieldValues = Ocr.getValuesField(self, data, field, fieldsSelected)
             valueField = Ocr.valueFormated(self, dataFieldValues)
-            dataReady.append({field: valueField});
+            dataReady.append({'name': valueField, 'nameBank': fieldBank[index]})
 
-        return Response(dataReady, status=status.HTTP_201_CREATED)
+        settingsBank = ConnectionsMysql.objects.get(ativo=True)
+        myCursor = MysqlConnection.connect(self, settingsBank)
+
+        result = None
+
+        if MysqlConnection.existTable(self, myCursor, request.data['table'], settingsBank):
+            myCursor = MysqlConnection.connect(self, settingsBank)
+            result = MysqlConnection.insertTable(self, myCursor, request.data['table'], settingsBank, dataReady)
+        else:
+            myCursor = MysqlConnection.connect(self, settingsBank)
+            MysqlConnection.createTable(self, myCursor, request.data['table'])
+            result = MysqlConnection.insertTable(self, myCursor, request.data['table'], settingsBank, dataReady)
+
+        return result

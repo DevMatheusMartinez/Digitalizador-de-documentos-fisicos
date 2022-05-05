@@ -25,7 +25,7 @@ class Ocr:
 
         return data
 
-    def returnAllFieldsSelected(self, request):
+    def returnAllFieldsSelected(self):
         data = SelectedField.objects.all()
         serializer = SelectedFieldSerializer(data, many=True)
         fields = serializer.data
@@ -34,6 +34,16 @@ class Ocr:
             namesFields.append(field['name']+':')
 
         return namesFields
+
+    def returnAllFieldBankSelected(self):
+        data = SelectedField.objects.all()
+        serializer = SelectedFieldSerializer(data, many=True)
+        fields = serializer.data
+        fieldsBank = []
+        for field in fields:
+            fieldsBank.append(field['nameBank'])
+
+        return fieldsBank
 
 
     def getValuesField(self, data, fieldSelected, fieldsSelected):
