@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import SelectedField, ConnectionsMysql
+from .models import SelectedField, ConnectionsMysql, UserMan
 
 
 class SelectedFieldSerializer(serializers.ModelSerializer):
@@ -21,4 +21,14 @@ class ConnectionsMysqlSerializer(serializers.ModelSerializer):
             'user',
             'password',
             'database',
+        )
+
+class UsersManSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserMan
+        fields = (
+            'id',
+            'name',
+            'email',
+            'password',
         )

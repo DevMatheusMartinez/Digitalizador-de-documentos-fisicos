@@ -65,12 +65,12 @@ class MysqlConnection:
         sql = "INSERT INTO " + table + " ("
 
         for data in fieldsExist:
-            sql = sql + data['nameBank'] + ", "
+                sql = sql + data['nameBank'] + ", "
 
         sql = sql[: -2] + ") VALUES ("
 
         for data in fieldsExist:
-            sql = sql + "'" + data['name'] + "'" + ", "
+                sql = sql + "'" + data['name'] + "'" + ", "
 
         sql = sql[:-2] + ")"
 
@@ -78,5 +78,5 @@ class MysqlConnection:
 
         mycursor.commit()
 
-        return Response("opa", status=status.HTTP_201_CREATED)
+        return Response(data, status=status.HTTP_201_CREATED)
 

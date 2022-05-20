@@ -9,7 +9,6 @@ class Base(models.Model):
     class Meta:
         abstract = True
 
-
 class ConnectionsMysql(Base):
     host = models.CharField(max_length=50)
     user = models.CharField(max_length=50)
@@ -23,6 +22,17 @@ class ConnectionsMysql(Base):
     def __str__(self):
         return self.database
 
+class UserMan(Base):
+    name = models.CharField(max_length=50)
+    email = models.CharField(max_length=50)
+    password = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = 'UserMan'
+        verbose_name_plural = 'UsersMan'
+
+    def __str__(self):
+        return self.database
 
 class SelectedField(Base):
     name = models.CharField(max_length=50)

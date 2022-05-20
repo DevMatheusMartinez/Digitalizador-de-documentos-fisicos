@@ -5,9 +5,8 @@ from rest_framework import status
 # Create your views here.
 from .services.OCR import Ocr
 from .services.MysqlConnection import MysqlConnection
-from .models import SelectedField, ConnectionsMysql
-from. serializers import SelectedFieldSerializer, ConnectionsMysqlSerializer
-
+from .models import SelectedField, ConnectionsMysql, UserMan
+from. serializers import SelectedFieldSerializer, ConnectionsMysqlSerializer, UsersManSerializer
 
 class ConnectionsMysqlApiView(APIView):
     def get(self, request):
@@ -21,6 +20,37 @@ class ConnectionsMysqlApiView(APIView):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def put(self, request):
+        field = ConnectionsMysql.objects.get(id=request.data['id'])
+        serializer = ConnectionsMysqlSerializer(field, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        field = ConnectionsMysql.objects.get(id=request.data['id'])
+        serializer = ConnectionsMysqlSerializer(field)
+        field.delete()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+class UsersManAPIView(APIView):
+    def get(self, request):
+        userMan = UserMan.objects.get(id=request.data['id'])
+        serializer = UsersManSerializer(userMan)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UsersManSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def put(self, request):
+        field = UserMan.objects.filter(id=request.data['id'], name=request.data['name'])
+        serializer = UsersManSerializer(field, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class SelectedFieldAPIView(APIView):
     def get(self, request):
